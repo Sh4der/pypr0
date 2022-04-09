@@ -105,7 +105,7 @@ class Manager(threading.Thread):
                 raise LookupError
 
     def insert_post(self, post):
-        statement = "insert into posts values(" + "".join(["?," for key, value in post.items()])[:-1] + ")"
+        statement = "insert or ignore into posts values(" + "".join(["?," for key, value in post.items()])[:-1] + ")"
         data = [post["id"], post["user"], post["promoted"], post["up"], post["down"], post["created"], post["image"],
                 post["thumb"], post["fullsize"], post["width"], post["height"], post["audio"], post["source"],
                 post["flags"], post["userId"], post["mark"], post["gift"]]
@@ -116,13 +116,13 @@ class Manager(threading.Thread):
             self.insert_post(post)
 
     def insert_user(self, user):
-        statement = "insert into posts values(" + "".join(["?," for key, value in user.items()])[:-1] + ")"
+        statement = "insert or ignore or ignore into posts values(" + "".join(["?," for key, value in user.items()])[:-1] + ")"
         data = [user["name"], user["id"], user["registered"], user["admin"], user["banned"], user["bannedUntil"],
                 user["mark"], user["score"], user["tags"], user["likes"], user["comments"], user["followers"]]
         self.sql_queue.put((statement, data, None))
 
     def insert_comment(self, comment):
-        statement = "insert into comments values(" + "".join(["?," for key, value in comment.items()])[:-1] + ")"
+        statement = "insert or ignore into comments values(" + "".join(["?," for key, value in comment.items()])[:-1] + ")"
         data = [comment["id"], comment["content"], comment["name"], comment["parent"], comment["created"],
                 comment["up"], comment["down"], comment["confidence"], comment["mark"]]
         self.sql_queue.put((statement, data, None))
@@ -132,7 +132,7 @@ class Manager(threading.Thread):
             self.insert_comment(comment)
 
     def insert_tag(self, tag):
-        statement = "insert into tags values(?, ?)"
+        statement = "insert or ignore into tags values(?, ?)"
         data = [None, tag["tag"]]
         self.sql_queue.put((statement, data, None))
 
@@ -141,7 +141,7 @@ class Manager(threading.Thread):
             self.insert_tag(tag)
 
     def insert_comment_assignment(self, comment_assignment):
-        statement = "insert into comment_assignments values(?, ?)"
+        statement = "insert or ignore into comment_assignments values(?, ?)"
         data = [comment_assignment.post, comment_assignment.comment]
         self.sql_queue.put((statement, data, None))
 
@@ -150,7 +150,7 @@ class Manager(threading.Thread):
             self.insert_comment_assignment(comment_assignment)
 
     def insert_tag_assignment(self, tag_assignment):
-        statement = "insert into tag_assignments values(?, ?, ?, ?)"
+        statement = "insert or ignore into tag_assignments values(?, ?, ?, ?)"
         data = [tag_assignment.post, tag_assignment.id, tag_assignment.tag, tag_assignment.confidence]
         self.sql_queue.put((statement, data, None))
 
